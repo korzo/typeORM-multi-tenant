@@ -1,0 +1,253 @@
+services:
+
+  # admin.reha.staging.mdoc.app:
+  #   build: $PWD
+  #   image: nextgenhealthcare/connect:4.4.1
+  #   platform: linux/x86_64
+  #   container_name: admin.reha.staging.mdoc.app
+  #   restart: always
+  #   environment:
+  #     DATABASE: postgres
+  #     DATABASE_URL: jdbc:postgresql://reha.database.vpc.private:5432/nextgenconnect
+  #     DATABASE_MAX_CONNECTIONS: 1
+  #     DATABASE_USERNAME: user
+  #     DATABASE_PASSWORD: senha
+  #     VMOPTIONS: -Xmx1024m
+  #     DATABASE_RETRY_WAIT: 1000
+  #     MIRTH_CONNECT_SSL_PORT: 443
+  #     MIRTH_CONNECT_SSL_ENABLED: true
+  #     _MP_HTTPS_PORT: 443
+  #     _MP_HTTP_PORT: 80
+  #   ports:
+  #     - 8783:8780/tcp
+  #     - 445:443/tcp
+  #   networks:
+  #     external:
+  #   depends_on:
+  #     - reha.database.vpc.private
+
+  # admin.cellitinnen.staging.mdoc.app:
+  #   build: $PWD
+  #   image: nextgenhealthcare/connect:4.4.1
+  #   platform: linux/x86_64
+  #   container_name: admin.cellitinnen.staging.mdoc.app
+  #   restart: always
+  #   environment:
+  #     DATABASE: postgres
+  #     DATABASE_URL: jdbc:postgresql://cellitinnen.database.vpc.private:5432/nextgenconnect
+  #     DATABASE_MAX_CONNECTIONS: 1
+  #     DATABASE_USERNAME: user
+  #     DATABASE_PASSWORD: senha
+  #     VMOPTIONS: -Xmx1024m
+  #     DATABASE_RETRY_WAIT: 1000
+  #     MIRTH_CONNECT_SSL_PORT: 443
+  #     MIRTH_CONNECT_SSL_ENABLED: true
+  #     _MP_SERVER_NAME: cellitinnen.nextgen.local.mdoc.app
+  #     _MP_HTTPS_PORT: 443
+  #     _MP_HTTP_PORT: 80
+  #   ports:
+  #     - 8782:8780/tcp
+  #     - 444:443/tcp
+  #   networks:
+  #     external:
+  #   depends_on:
+  #     - cellitinnen.database.vpc.private
+
+  pgadmin4:
+    image: elestio/pgadmin
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 8080
+    networks:
+      - external
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data/servers.json:/pgadmin4/servers.json
+
+  master.database.vpc.private:
+    container_name: master
+    image: postgres
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: mdoc_authentication
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - external
+  
+  mtls-test.database.vpc.private:
+    container_name: mtls-test
+    image: postgres
+    ports:
+      - "9990:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: mtlstest
+      POSTGRES_PASSWORD: AErmsQFBvrynEKxOAV7NalxuUg6RaTJn
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+
+  cgm-reha.database.vpc.private:
+    container_name: cgm-reha
+    image: postgres
+    ports:
+      - "9991:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: cgmreha
+      POSTGRES_PASSWORD: O4jtiNzKkKRA85Cp89HN1lUWJLeokqeR
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+
+  cgm-reha-test.database.vpc.private:
+    container_name: cgm-reha-test
+    image: postgres
+    ports:
+      - "9989:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: cgmrehatest
+      POSTGRES_PASSWORD: wpMfR1ZYKjrcr9f6sGJyv9J9yHt2Mmmn
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+
+  dev-test.database.vpc.private:
+    container_name: dev-test
+    image: postgres
+    ports:
+      - "9999:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: devtest
+      POSTGRES_PASSWORD: 7dcdqMorVRtUP2tBSvIfxlWiOHJPrIzV
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+
+  mtls-devops-test.database.vpc.private:
+    container_name: mtls-devops-test
+    image: postgres
+    ports:
+      - "9994:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: mtlsdevopstest
+      POSTGRES_PASSWORD: gOXAyu3jjfa3unYiOJ547tiKbyqmu4h6
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+
+  vpn-test.database.vpc.private:
+    container_name: vpn-test
+    image: postgres
+    ports:
+      - "9995:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: vpntest
+      POSTGRES_PASSWORD: bOMcRrj4Bbp0QDlRekIPmlgQY42WMmdd
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+
+  connectivity-test.database.vpc.private:
+    container_name: connectivity-test
+    image: postgres
+    ports:
+      - "9996:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: connectivitytest
+      POSTGRES_PASSWORD: FQmT8NsVawkZyDbr5A48ue1dt5Sgvu7N
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+
+  cgm-fhir.database.vpc.private:
+    container_name: cgm-fhir
+    image: postgres
+    ports:
+      - "9997:5432"
+    environment:
+      POSTGRES_DB: nextgenconnect
+      POSTGRES_USER: cgmfhir
+      POSTGRES_PASSWORD: kMO9LKhuD2PuOMRGe7GDNpp5fJl5G13f
+    secrets:
+      - database-user
+      - database-pass
+    networks:
+      - external
+      
+  backend:
+    container_name: ms-mirth
+    healthcheck:
+      test: curl --fail http://backend:3001/api/mirth/ping || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 3
+    command: sh -c "npm run start:dev"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      APP_PORT: 3001
+      CONTEXT_PATH: /mirth-ms
+      MDOC_HOST: http://dev.mdoc.app.local:3001
+      DB_MIRTH_USER: root
+      DB_MIRTH_PASS: root
+      DB_DATASOURCE_URL: postgresql://root:root@master.database.vpc.private:5432/mdoc_authentication
+      # CUSTOMER_PREFIX: mtls-test,cgm-reha,cgm-reha-test,dev-test,mtls-devops-test,vpn-test,connectivity-test,cgm-fhir
+
+    volumes:
+      - /app/node_modules
+      - $PWD/dist:/app/dist
+      - $PWD/bin:/app/bin
+      - $PWD/src:/app/src
+      - $PWD/logs:/app/logs
+      - $PWD/package.json:/app/package.json
+      - $PWD/tsconfig.json:/app/tsconfig.json
+      - $PWD/tsconfig.build.json:/app/tsconfig.build.json
+    ports:
+      - 3001:3001
+    networks:
+      - external
+    depends_on:
+      - master.database.vpc.private
+
+secrets:
+  database-user:
+    file: ./secrets/database-user.txt
+  database-pass:
+    file: ./secrets/database-pass.txt
+
+networks:
+  external:
